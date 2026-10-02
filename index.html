@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="أكاديمية الضاد لتعليم اللغة العربية بأسلوب حديث وميسر - دورات، اختبارات، وشهادات معتمدة">
+    <meta name="theme-color" content="#064e3b">
+    <title>أكاديمية الضاد | لتعليم اللغة العربية</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#064e3b', // أخضر داكن
+                        secondary: '#d97706', // ذهبي
+                        accent: '#f59e0b', // ذهبي فاتح
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .splash-screen { transition: opacity 0.8s ease-out, visibility 0.8s; }
+        .hide-splash { opacity: 0; visibility: hidden; pointer-events: none; }
+        .gold-gradient { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
+        .certificate-border { border: 8px double #d97706; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #064e3b; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb { background: #d97706; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Splash Screen -->
+    <div id="splash" class="splash-screen fixed inset-0 z-50 bg-primary flex flex-col items-center justify-center text-white">
+        <div class="text-6xl mb-4 animate-bounce">
+            <i class="fas fa-book-open text-secondary"></i>
+            <span class="text-4xl font-bold mr-2">ض</span>
+        </div>
+        <h1 class="text-3xl font-bold mb-2">أكاديمية الضاد</h1>
+        <p class="text-secondary text-lg">لتعليم اللغة العربية بأسلوب حديث وميسر</p>
+        <div class="mt-8 w-48 h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div class="h-full bg-secondary animate-[width_2s_ease-in-out_forwards]" style="width: 0%" id="splash-bar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="hidden bg-white dark:bg-darkcard shadow-md sticky top-0 z-40 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl border-2 border-secondary">
+                    ض
+                </div>
+                <span class="text-xl font-bold text-primary dark:text-white hidden sm:block">أكاديمية الضاد</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6">
+                <a onclick="router.navigate('home')" class="hover:text-secondary cursor-pointer font-semibold">الرئيسية</a>
+                <a onclick="router.navigate('courses')" class="hover:text-secondary cursor-pointer font-semibold">الدورات</a>
+                <a onclick="router.navigate('exams')" class="hover:text-secondary cursor-pointer font-semibold">الاختبارات</a>
+                <a onclick="router.navigate('contact')" class="hover:text-secondary cursor-pointer font-semibold">تواصل معنا</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-moon dark:hidden text-primary"></i>
+                    <i class="fas fa-sun hidden dark:block text-secondary"></i>
+                </button>
+                <div id="auth-buttons">
+                    <button onclick="router.navigate('login')" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-emerald-800 transition text-sm font-bold">تسجيل الدخول</button>
+                </div>
+                <div id="user-menu" class="hidden relative">
+                    <button onclick="toggleUserMenu()" class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg">
+                        <i class="fas fa-user-circle text-2xl text-primary"></i>
+                        <span id="nav-username" class="hidden sm:block font-semibold text-sm">ضيف</span>
+                    </button>
+                    <div id="user-dropdown" class="hidden absolute left-0 mt-2 w-48 bg-white dark:bg-darkcard shadow-xl rounded-lg py-2 border border-gray-200 dark:border-gray-700">
+                        <a onclick="router.navigate('profile')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">الملف الشخصي</a>
+                        <a onclick="router.navigate('certificates')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">شهاداتي</a>
+                        <a id="admin-link" onclick="router.navigate('admin')" class="hidden block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer text-secondary font-bold">لوحة الأدمن</a>
+                        <hr class="my-2 border-gray-200 dark:border-gray-700">
+                        <a onclick="auth.logout()" class="block px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 cursor-pointer">تسجيل الخروج</a>
+                    </div>
+                </div>
+                <button class="md:hidden text-2xl text-primary" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-darkcard border-t dark:border-gray-700 p-4">
+            <a onclick="router.navigate('home')" class="block py-2 hover:text-secondary">الرئيسية</a>
+            <a onclick="router.navigate('courses')" class="block py-2 hover:text-secondary">الدورات</a>
+            <a onclick="router.navigate('exams')" class="block py-2 hover:text-secondary">الاختبارات</a>
+            <a onclick="router.navigate('contact')" class="block py-2 hover:text-secondary">تواصل معنا</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app" class="min-h-screen pb-20">
+        <!-- Views will be injected here -->
+    </main>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/201220247641" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition transform hover:scale-110 animate-pulse">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer id="footer" class="hidden bg-primary text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-book-open text-secondary text-2xl"></i>
+                        <h3 class="text-2xl font-bold">أكاديمية الضاد</h3>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">تعليم اللغة العربية بأسلوب حديث وميسر لجميع المراحل التعليمية، مع شهادات معتمدة ومتابعة مستمرة.</p>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-secondary">روابط سريعة</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a onclick="router.navigate('courses')" class="hover:text-white cursor-pointer">الدورات التعليمية</a></li>
+                        <li><a onclick="router.navigate('exams')" class="hover:text-white cursor-pointer">الاختبارات الإلكترونية</a></li>
+                        <li><a onclick="router.navigate('contact')" class="hover:text-white cursor-pointer">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-secondary">تواصل معنا</h4>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fas fa-phone text-secondary"></i> 01220247641</li>
+                        <li class="flex items-center gap-2"><i class="fab fa-whatsapp text-secondary"></i> 01220247641</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-user-tie text-secondary"></i> المدير: محمود محمد إسماعيل عبد الباسط</li>
+                    </ul>
+                    <div class="flex gap-4 mt-4">
+                        <a href="https://www.facebook.com/share/1BvvfEzy9h/" target="_blank" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://wa.me/201220247641" target="_blank" class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-emerald-800 pt-6 text-center text-gray-400 text-sm">
+                <p>© 2026 أكاديمية الضاد. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Mock Database ---
+        const db = {
+            users: [
+                { id: 1, name: "محمود محمد إسماعيل عبد الباسط", email: "admin@aldhad.com", phone: "01220247641", role: "admin", grade: "مدير المنصة", password: "admin123", completedCourses: [1, 2], certificates: [1] },
+                { id: 2, name: "أحمد علي", email: "student@test.com", phone: "01000000000", role: "student", grade: "الصف الثالث الثانوي", password: "123456", completedCourses: [1], certificates: [] }
+            ],
+            courses: [
+                { id: 1, title: "دورة النحو الشامل", category: "النحو", level: "الصف الثالث الثانوي", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500", desc: "شرح مبسط ومفصل لقواعد النحو العربي من المبتدئ إلى الاحتراف", lessonsCount: 24, duration: "12 ساعة", students: 150, progress: 0 },
+                { id: 2, title: "البلاغة والنقد الأدبي", category: "البلاغة", level: "المرحلة الجامعية", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", desc: "فهم أسرار الجمال في اللغة العربية وعلوم البلاغة الثلاثة", lessonsCount: 18, duration: "9 ساعات", students: 89, progress: 0 },
+                { id: 3, title: "أحكام التجويد والقراءات", category: "القراءات", level: "الصف الأول الثانوي", image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=500", desc: "تعلم أحكام التجويد الأساسية والقراءات العشر الصغرى", lessonsCount: 30, duration: "15 ساعة", students: 320, progress: 0 }
+            ],
+            lessons: [
+                { id: 1, courseId: 1, title: "المبتدأ والخبر", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", pdfUrl: "#", summary: "شرح تفصيلي لأحكام المبتدأ والخبر مع الأمثلة التطبيقية.", homework: "حل تمارين صفحة 12", comments: [{user: "أحمد", text: "شرح ممتاز يا أستاذ محمود"}] },
+                { id: 2, courseId: 1, title: "كان وأخواتها", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", pdfUrl: "#", summary: "الأفعال الناسخة وأثرها في المبتدأ والخبر.", homework: "إعراب 5 جمل", comments: [] }
+            ],
+            exams: [
+                { id: 1, courseId: 1, title: "اختبار النحو النهائي", duration: 10, questions: [
+                    { q: "ما هو إعراب كلمة 'الطالبُ' في جملة: الطالبُ مجتهدٌ؟", options: ["مبتدأ مرفوع", "خبر مرفوع", "فاعل مرفوع"], correct: 0 },
+                    { q: "من أخوات كان التي تعمل عملها؟", options: ["إنّ", "ليس", "لعلّ"], correct: 1 }
+                ]}
+            ],
+            notifications: [
+                { id: 1, text: "تم إضافة درس جديد في دورة النحو الشامل", date: "2026-09-01", read: false },
+                { id: 2, text: "تذكير: بدء اختبار البلاغة غداً", date: "2026-09-02", read: false }
+            ]
+        };
+
+        // --- State Management ---
+        const state = {
+            currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
+            darkMode: localStorage.getItem('darkMode') === 'true',
+            currentView: 'splash'
+        };
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if (state.darkMode) document.documentElement.classList.add('dark');
+            
+            // Splash Screen Logic
+            setTimeout(() => { document.getElementById('splash-bar').style.width = '100%'; }, 100);
+            setTimeout(() => {
+                document.getElementById('splash').classList.add('hide-splash');
+                if (!state.currentUser) {
+                    router.navigate('onboarding');
+                } else {
+                    router.navigate('home');
+                }
+            }, 2500);
+
+            updateAuthUI();
+        });
+
+        // --- Router ---
+        const router = {
+            navigate: (view, params = {}) => {
+                state.currentView = view;
+                const app = document.getElementById('app');
+                window.scrollTo(0, 0);
+                
+                // Show/Hide Nav & Footer
+                const noNavViews = ['splash', 'onboarding', 'login', 'register'];
+                if (noNavViews.includes(view)) {
+                    document.getElementById('navbar').classList.add('hidden');
+                    document.getElementById('footer').classList.add('hidden');
+                } else {
+                    document.getElementById('navbar').classList.remove('hidden');
+                    document.getElementById('footer').classList.remove('hidden');
+                }
+
+                // Render View
+                switch(view) {
+                    case 'onboarding': app.innerHTML = views.onboarding(); break;
+                    case 'login': app.innerHTML = views.login(); break;
+                    case 'register': app.innerHTML = views.register(); break;
+                    case 'home': app.innerHTML = views.home(); break;
+                    case 'courses': app.innerHTML = views.courses(); break;
+                    case 'course-details': app.innerHTML = views.courseDetails(params.id); break;
+                    case 'lesson': app.innerHTML = views.lesson(params.id); break;
+                    case 'exams': app.innerHTML = views.exams(); break;
+                    case 'exam-taking': app.innerHTML = views.examTaking(params.id); break;
+                    case 'results': app.innerHTML = views.results(params.score, params.total); break;
+                    case 'certificates': app.innerHTML = views.certificates(); break;
+                    case 'profile': app.innerHTML = views.profile(); break;
+                    case 'admin': app.innerHTML = views.admin(); break;
+                    case 'contact': app.innerHTML = views.contact(); break;
+                    default: app.innerHTML = views.home();
+                }
+            }
+        };
+
+        // --- Views Templates ---
+        const views = {
+            onboarding: () => `
+                <div class="min-h-screen bg-primary flex flex-col items-center justify-center p-6 text-white fade-in">
+                    <div class="max-w-md w-full text-center">
+                        <div class="mb-8">
+                            <i class="fas fa-book-open text-6xl text-secondary mb-4"></i>
+                            <h1 class="text-3xl font-bold mb-2">أكاديمية الضاد</h1>
+                            <p class="text-gray-300">منصتك الشاملة لاحتراف اللغة العربية</p>
+                        </div>
+                        <div class="space-y-6 text-right">
+                            <div class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                                <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-xl font-bold">1</div>
+                                <div><h3 class="font-bold text-lg">تعلم العربية بأسلوب حديث</h3><p class="text-sm text-gray-300">محتوى تفاعلي ومرئي مبسط</p></div>
+                            </div>
+                            <div class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                                <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-xl font-bold">2</div>
+                                <div><h3 class="font-bold text-lg">دورات لجميع المراحل</h3><p class="text-sm text-gray-300">من الابتدائي حتى المرحلة الجامعية</p></div>
+                            </div>
+                            <div class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                                <div class="w-12 h-12 bg-secondary rounded-full flex items-center justify-center text-xl font-bold">3</div>
+                                <div><h3 class="font-bold text-lg">اختبارات وشهادات معتمدة</h3><p class="text-sm text-gray-300">قيّم مستواك واحصل على شهادتك</p></div>
+                            </div>
+                        </div>
+                        <button onclick="router.navigate('register')" class="mt-8 w-full bg-secondary text-white py-4 rounded-xl font-bold text-lg hover:bg-amber-600 transition shadow-lg transform hover:scale-105">
+                            ابدأ الآن مجاناً
+                        </button>
+                        <button onclick="router.navigate('login')" class="mt-4 text-gray-300 hover:text-white underline">لديك حساب بالفعل؟ سجل دخول</button>
+                    </div>
+                </div>
+            `,
+            login: () => `
+                <div class="min-h-screen flex items-center justify-center p-4 fade-in">
+                    <div class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <i class="fas fa-book-open text-4xl text-primary mb-2"></i>
+                            <h2 class="text-2xl font-bold text-primary dark:text-white">تسجيل الدخول</h2>
+                        </div>
+                        <form onsubmit="auth.login(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">البريد الإلكتروني</label>
+                                <input type="email" name="email" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">كلمة المرور</label>
+                                <input type="password" name="password" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition">
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded text-secondary"> تذكرني</label>
+                                <a href="#" class="text-secondary hover:underline">نسيت كلمة المرور؟</a>
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition">دخول</button>
+                        </form>
+                        <p class="text-center mt-6 text-sm">ليس لديك حساب؟ <a onclick="router.navigate('register')" class="text-secondary font-bold cursor-pointer hover:underline">سجل الآن</a></p>
+                    </div>
+                </div>
+            `,
+            register: () => `
+                <div class="min-h-screen flex items-center justify-center p-4 fade-in">
+                    <div class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <h2 class="text-2xl font-bold text-primary dark:text-white">إنشاء حساب جديد</h2>
+                        </div>
+                        <form onsubmit="auth.register(event)" class="space-y-4">
+                            <input type="text" name="name" placeholder="الاسم الكامل" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary outline-none">
+                            <input type="email" name="email" placeholder="البريد الإلكتروني" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary outline-none">
+                            <input type="tel" name="phone" placeholder="رقم الهاتف" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary outline-none">
+                            <select name="grade" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary outline-none">
+                                <option value="">اختر الصف الدراسي</option>
+                                <option>الصف الرابع الابتدائي</option>
+                                <option>الصف الخامس الابتدائي</option>
+                                <option>الصف السادس الابتدائي</option>
+                                <option>الصف الأول الإعدادي</option>
+                                <option>الصف الثاني الإعدادي</option>
+                                <option>الصف الثالث الإعدادي</option>
+                                <option>الصف الأول الثانوي</option>
+                                <option>الصف الثاني الثانوي</option>
+                                <option>الصف الثالث الثانوي</option>
+                                <option>المرحلة الجامعية</option>
+                            </select>
+                            <input type="password" name="password" placeholder="كلمة المرور" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 focus:ring-2 focus:ring-secondary outline-none">
+                            <button type="submit" class="w-full bg-secondary text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition">إنشاء الحساب</button>
+                        </form>
+                        <p class="text-center mt-4 text-sm">لديك حساب؟ <a onclick="router.navigate('login')" class="text-primary font-bold cursor-pointer">تسجيل الدخول</a></p>
+                    </div>
+                </div>
+            `,
+            home: () => `
+                <div class="fade-in">
+                    <!-- Hero Banner -->
+                    <div class="relative bg-primary text-white overflow-hidden">
+                        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
+                        <div class="container mx-auto px-4 py-16 md:py-24 relative z-10 flex flex-col md:flex-row items-center">
+                            <div class="md:w-1/2 text-center md:text-right mb-8 md:mb-0">
+                                <span class="bg-secondary/20 text-secondary px-4 py-1 rounded-full text-sm font-bold mb-4 inline-block">منصة تعليمية معتمدة</span>
+                                <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">أتقن اللغة العربية<br>مع <span class="text-secondary">أكاديمية الضاد</span></h1>
+                                <p class="text-gray-300 mb-8 text-lg">دورات شاملة في النحو، الصرف، البلاغة، والأدب مع أفضل المعلمين وشهادات معتمدة.</p>
+                                <div class="flex gap-4 justify-center md:justify-start">
+                                    <button onclick="router.navigate('courses')" class="bg-secondary text-white px-8 py-3 rounded-lg font-bold hover:bg-amber-600 transition shadow-lg">تصفح الدورات</button>
+                                    <button onclick="router.navigate('register')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">سجل مجاناً</button>
+                                </div>
+                            </div>
+                            <div class="md:w-1/2 flex justify-center">
+                                <div class="relative w-80 h-80 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border-4 border-secondary/30">
+                                    <i class="fas fa-book-open text-9xl text-secondary opacity-80"></i>
+                                    <div class="absolute -bottom-4 -right-4 bg-white text-primary p-4 rounded-xl shadow-xl">
+                                        <p class="font-bold text-2xl">+1000</p>
+                                        <p class="text-sm">طالب متميز</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container mx-auto px-4 py-12">
+                        <!-- Categories -->
+                        <div class="flex overflow-x-auto gap-4 pb-4 mb-8 no-scrollbar">
+                            ${['النحو', 'الصرف', 'البلاغة', 'الأدب', 'العروض', 'النقد', 'الإملاء', 'التعبير', 'القرآن وعلومه', 'القراءات', 'المعاجم'].map(cat => `
+                                <button class="whitespace-nowrap px-6 py-2 bg-white dark:bg-darkcard border border-gray-200 dark:border-gray-700 rounded-full hover:bg-primary hover:text-white hover:border-primary transition font-semibold shadow-sm">${cat}</button>
+                            `).join('')}
+                        </div>
+
+                        <!-- Featured Courses -->
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-primary dark:text-white border-r-4 border-secondary pr-3">الدورات المميزة</h2>
+                            <a onclick="router.navigate('courses')" class="text-secondary hover:underline cursor-pointer font-semibold">عرض الكل <i class="fas fa-arrow-left mr-1"></i></a>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                            ${db.courses.map(course => components.courseCard(course)).join('')}
+                        </div>
+
+                        <!-- Stats Section -->
+                        <div class="bg-primary rounded-2xl p-8 text-white grid grid-cols-2 md:grid-cols-4 gap-8 text-center mb-12">
+                            <div><i class="fas fa-user-graduate text-4xl text-secondary mb-2"></i><p class="text-3xl font-bold">1,250</p><p class="text-gray-300">طالب مسجل</p></div>
+                            <div><i class="fas fa-book text-4xl text-secondary mb-2"></i><p class="text-3xl font-bold">45</p><p class="text-gray-300">دورة تعليمية</p></div>
+                            <div><i class="fas fa-certificate text-4xl text-secondary mb-2"></i><p class="text-3xl font-bold">800</p><p class="text-gray-300">شهادة صادرة</p></div>
+                            <div><i class="fas fa-star text-4xl text-secondary mb-2"></i><p class="text-3xl font-bold">4.9</p><p class="text-gray-300">تقييم المنصة</p></div>
+                        </div>
+                    </div>
+                </div>
+            `,
+            courses: () => `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-8 text-center">جميع الدورات التعليمية</h2>
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-4 mb-8 justify-center">
+                        <select class="px-4 py-2 rounded-lg border dark:bg-darkcard dark:border-gray-700 outline-none focus:border-secondary">
+                            <option>جميع المراحل</option>
+                            <option>المرحلة الابتدائية</option>
+                            <option>المرحلة الإعدادية</option>
+                            <option>المرحلة الثانوية</option>
+                            <option>المرحلة الجامعية</option>
+                        </select>
+                        <select class="px-4 py-2 rounded-lg border dark:bg-darkcard dark:border-gray-700 outline-none focus:border-secondary">
+                            <option>جميع الأقسام</option>
+                            <option>النحو</option>
+                            <option>البلاغة</option>
+                            <option>القراءات</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${db.courses.map(course => components.courseCard(course)).join('')}
+                    </div>
+                </div>
+            `,
+            courseDetails: (id) => {
+                const course = db.courses.find(c => c.id === id) || db.courses[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <button onclick="router.navigate('courses')" class="mb-4 text-gray-500 hover:text-primary flex items-center gap-2"><i class="fas fa-arrow-right"></i> عودة للدورات</button>
+                    <div class="bg-white dark:bg-darkcard rounded-2xl shadow-lg overflow-hidden">
+                        <div class="h-64 md:h-96 bg-gray-200 relative">
+                            <img src="${course.image}" class="w-full h-full object-cover" alt="${course.title}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end">
+                                <div class="p-6 md:p-8 text-white w-full">
+                                    <span class="bg-secondary px-3 py-1 rounded-full text-sm font-bold mb-2 inline-block">${course.category}</span>
+                                    <h1 class="text-3xl md:text-4xl font-bold mb-2">${course.title}</h1>
+                                    <div class="flex flex-wrap gap-4 text-sm md:text-base text-gray-300">
+                                        <span><i class="fas fa-user-graduate ml-1"></i> ${course.students} طالب</span>
+                                        <span><i class="fas fa-clock ml-1"></i> ${course.duration}</span>
+                                        <span><i class="fas fa-play-circle ml-1"></i> ${course.lessonsCount} درس</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 md:p-8 grid md:grid-cols-3 gap-8">
+                            <div class="md:col-span-2">
+                                <h3 class="text-xl font-bold mb-4 text-primary dark:text-white">وصف الدورة</h3>
+                                <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">${course.desc}</p>
+                                
+                                <h3 class="text-xl font-bold mb-4 text-primary dark:text-white">محتوى الدورة</h3>
+                                <div class="space-y-3">
+                                    ${db.lessons.filter(l => l.courseId === course.id).map((lesson, idx) => `
+                                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-secondary transition cursor-pointer" onclick="router.navigate('lesson', {id: ${lesson.id}})">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">${idx + 1}</div>
+                                                <span class="font-semibold">${lesson.title}</span>
+                                            </div>
+                                            <i class="fas fa-play-circle text-secondary text-xl"></i>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="md:col-span-1">
+                                <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 sticky top-24">
+                                    <div class="text-3xl font-bold text-primary mb-4">مجاناً</div>
+                                    <button onclick="router.navigate('lesson', {id: 1})" class="w-full bg-secondary text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition mb-4">ابدأ التعلم الآن</button>
+                                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> وصول مدى الحياة</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> شهادة إتمام معتمدة</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> ملفات PDF مرفقة</li>
+                                        <li class="flex items-center gap-2"><i class="fas fa-check text-green-500"></i> دعم مباشر من المعلم</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            },
+            lesson: (id) => {
+                const lesson = db.lessons.find(l => l.id === id) || db.lessons[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <button onclick="router.navigate('courses')" class="mb-4 text-gray-500 hover:text-primary flex items-center gap-2"><i class="fas fa-arrow-right"></i> عودة للدورة</button>
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2">
+                            <div class="aspect-video bg-black rounded-xl overflow-hidden shadow-lg mb-4">
+                                <iframe class="w-full h-full" src="${lesson.videoUrl}" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <h1 class="text-2xl font-bold mb-4 text-primary dark:text-white">${lesson.title}</h1>
+                            <div class="flex gap-4 mb-6">
+                                <button class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition flex items-center gap-2">
+                                    <i class="fas fa-check"></i> تمت مشاهدة الدرس
+                                </button>
+                                <button class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-300 transition flex items-center gap-2">
+                                    <i class="fas fa-download"></i> ملخص الدرس (PDF)
+                                </button>
+                            </div>
+                            
+                            <!-- Tabs -->
+                            <div class="border-b border-gray-200 dark:border-gray-700 mb-4">
+                                <div class="flex gap-6">
+                                    <button class="pb-2 border-b-2 border-secondary font-bold text-secondary">محتوى الدرس</button>
+                                    <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">الواجبات</button>
+                                    <button class="pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">المناقشات (${lesson.comments.length})</button>
+                                </div>
+                            </div>
+                            <div class="prose dark:prose-invert max-w-none">
+                                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">${lesson.summary}</p>
+                                <div class="mt-4 bg-amber-50 dark:bg-amber-900/20 border-r-4 border-secondary p-4 rounded">
+                                    <h4 class="font-bold text-secondary mb-2">الواجب المنزلي:</h4>
+                                    <p>${lesson.homework}</p>
+                                </div>
+                            </div>
+
+                            <!-- Comments -->
+                            <div class="mt-8">
+                                <h3 class="font-bold text-lg mb-4">المناقشات</h3>
+                                <div class="space-y-4 mb-4">
+                                    ${lesson.comments.map(c => `
+                                        <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                            <div class="flex justify-between mb-2">
+                                                <span class="font-bold text-primary">${c.user}</span>
+                                                <span class="text-xs text-gray-500">منذ يومين</span>
+                                            </div>
+                                            <p class="text-gray-600 dark:text-gray-300">${c.text}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" placeholder="أضف تعليقاً أو استفساراً..." class="flex-1 px-4 py-2 rounded-lg border dark:bg-gray-800 dark:border-gray-700 outline-none focus:border-secondary">
+                                    <button class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-800">إرسال</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar Lessons List -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white dark:bg-darkcard rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                <div class="p-4 bg-primary text-white font-bold">محتوى الدورة</div>
+                                <div class="max-h-[600px] overflow-y-auto">
+                                    ${db.lessons.map((l, idx) => `
+                                        <div onclick="router.navigate('lesson', {id: ${l.id}})" class="p-4 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer flex items-center gap-3 ${l.id === lesson.id ? 'bg-amber-50 dark:bg-amber-900/20 border-r-4 border-r-secondary' : ''}">
+                                            <div class="w-8 h-8 rounded-full ${l.id === lesson.id ? 'bg-secondary text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'} flex items-center justify-center text-sm font-bold">${idx + 1}</div>
+                                            <div class="flex-1">
+                                                <p class="font-semibold text-sm ${l.id === lesson.id ? 'text-secondary' : ''}">${l.title}</p>
+                                                <p class="text-xs text-gray-500">15 دقيقة</p>
+                                            </div>
+                                            ${l.id === lesson.id ? '<i class="fas fa-play text-secondary"></i>' : '<i class="fas fa-lock text-gray-400 text-xs"></i>'}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            },
+            exams: () => `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-8 text-center">الاختبارات الإلكترونية</h2>
+                    <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        ${db.exams.map(exam => `
+                            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center text-2xl"><i class="fas fa-clock"></i></div>
+                                    <span class="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-bold">${exam.duration} دقائق</span>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2">${exam.title}</h3>
+                                <p class="text-gray-500 text-sm mb-4">${exam.questions.length} أسئلة اختيار من متعدد</p>
+                                <button onclick="router.navigate('exam-taking', {id: ${exam.id}})" class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition">بدء الاختبار الآن</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `,
+            examTaking: (id) => {
+                const exam = db.exams.find(e => e.id === id) || db.exams[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in max-w-3xl">
+                    <div class="bg-white dark:bg-darkcard rounded-xl shadow-lg p-6 mb-6 sticky top-20 z-30 flex justify-between items-center border-b-2 border-secondary">
+                        <h3 class="font-bold text-lg">${exam.title}</h3>
+                        <div class="text-2xl font-bold text-red-600 font-mono" id="timer">0${exam.duration}:00</div>
+                    </div>
+                    <form onsubmit="examSystem.submit(event, ${exam.id})" class="space-y-6">
+                        ${exam.questions.map((q, idx) => `
+                            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+                                <p class="font-bold text-lg mb-4"><span class="text-secondary ml-2">${idx + 1}.</span> ${q.q}</p>
+                                <div class="space-y-3">
+                                    ${q.options.map((opt, optIdx) => `
+                                        <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition">
+                                            <input type="radio" name="q${idx}" value="${optIdx}" required class="w-5 h-5 text-secondary focus:ring-secondary">
+                                            <span>${opt}</span>
+                                        </label>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button type="submit" class="w-full bg-secondary text-white py-4 rounded-xl font-bold text-lg hover:bg-amber-600 transition shadow-lg">إنهاء الاختبار وتصحيحه</button>
+                    </form>
+                </div>
+                `;
+            },
+            results: (score, total) => {
+                const percentage = Math.round((score / total) * 100);
+                const passed = percentage >= 50;
+                return `
+                <div class="container mx-auto px-4 py-12 fade-in text-center">
+                    <div class="max-w-md mx-auto bg-white dark:bg-darkcard p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                        <div class="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl ${passed ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                            <i class="fas ${passed ? 'fa-trophy' : 'fa-times'}"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">${passed ? 'مبروك! لقد اجتزت الاختبار' : 'حاول مرة أخرى'}</h2>
+                        <div class="text-5xl font-bold text-primary mb-2">${percentage}%</div>
+                        <p class="text-gray-500 mb-6">إجابات صحيحة: ${score} من ${total}</p>
+                        
+                        <div class="space-y-3">
+                            <button onclick="router.navigate('certificates')" class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition">عرض الشهادة</button>
+                            <button onclick="router.navigate('home')" class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-3 rounded-lg font-bold hover:bg-gray-300 transition">العودة للرئيسية</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            },
+            certificates: () => `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-8 text-center">شهاداتي المعتمدة</h2>
+                    <div class="max-w-3xl mx-auto">
+                        <div class="bg-white p-8 md:p-12 rounded-lg shadow-2xl certificate-border relative text-center">
+                            <div class="absolute top-4 left-4 w-16 h-16 opacity-20">
+                                <svg viewBox="0 0 100 100" class="w-full h-full fill-current text-primary"><circle cx="50" cy="50" r="40"/></svg>
+                            </div>
+                            <i class="fas fa-book-open text-5xl text-secondary mb-4"></i>
+                            <h1 class="text-3xl md:text-4xl font-bold text-primary mb-2">شهادة إتمام</h1>
+                            <p class="text-gray-500 mb-8">تشهد أكاديمية الضاد بأن</p>
+                            <h2 class="text-2xl md:text-3xl font-bold text-secondary mb-2 border-b-2 border-secondary inline-block pb-2 px-8">${state.currentUser ? state.currentUser.name : 'اسم الطالب'}</h2>
+                            <p class="text-gray-600 mt-6 mb-2">قد أتم بنجاح دورة</p>
+                            <h3 class="text-xl font-bold text-primary mb-6">النحو الشامل المتقدم</h3>
+                            <div class="flex justify-center items-center gap-8 mt-8 text-sm text-gray-500">
+                                <div>
+                                    <p class="font-bold text-gray-800 dark:text-white">تاريخ الإصدار</p>
+                                    <p>2026/09/03</p>
+                                </div>
+                                <div class="w-24 h-24 bg-gray-800 text-white flex items-center justify-center text-xs p-1 rounded">
+                                    QR CODE<br>VERIFY
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-800 dark:text-white">توقيع المدير</p>
+                                    <p class="font-cairo font-bold text-primary">محمود محمد إسماعيل</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-6">
+                            <button class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:bg-emerald-800 transition flex items-center gap-2 mx-auto">
+                                <i class="fas fa-download"></i> تحميل الشهادة (PDF)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `,
+            profile: () => `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1">
+                            <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow-lg text-center border border-gray-200 dark:border-gray-700">
+                                <div class="w-24 h-24 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
+                                    ${state.currentUser ? state.currentUser.name.charAt(0) : 'ض'}
+                                </div>
+                                <h3 class="text-xl font-bold mb-1">${state.currentUser ? state.currentUser.name : 'ضيف'}</h3>
+                                <p class="text-secondary font-semibold mb-4">${state.currentUser ? state.currentUser.grade
