@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="أكاديمية الضاد لتعليم اللغة العربية بأسلوب حديث وميسر - دورات، اختبارات، وشهادات معتمدة">
+    <meta name="theme-color" content="#064e3b">
+    <title>أكاديمية الضاد | لتعليم اللغة العربية</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#064e3b',
+                        secondary: '#d97706',
+                        accent: '#f59e0b',
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .splash-screen { transition: opacity 0.8s ease-out, visibility 0.8s; }
+        .hide-splash { opacity: 0; visibility: hidden; pointer-events: none; }
+        .certificate-border { border: 8px double #d97706; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #064e3b; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        .dark ::-webkit-scrollbar-thumb { background: #d97706; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-darkbg dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Splash Screen -->
+    <div id="splash" class="splash-screen fixed inset-0 z-50 bg-primary flex flex-col items-center justify-center text-white">
+        <div class="text-6xl mb-4 animate-bounce">
+            <i class="fas fa-book-open text-secondary"></i>
+            <span class="text-4xl font-bold mr-2">ض</span>
+        </div>
+        <h1 class="text-3xl font-bold mb-2">أكاديمية الضاد</h1>
+        <p class="text-secondary text-lg">لتعليم اللغة العربية بأسلوب حديث وميسر</p>
+        <div class="mt-8 w-48 h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div class="h-full bg-secondary transition-all duration-1000" style="width: 0%" id="splash-bar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="hidden bg-white dark:bg-darkcard shadow-md sticky top-0 z-40 transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl border-2 border-secondary">
+                    ض
+                </div>
+                <span class="text-xl font-bold text-primary dark:text-white hidden sm:block">أكاديمية الضاد</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-6">
+                <a onclick="router.navigate('home')" class="hover:text-secondary cursor-pointer font-semibold">الرئيسية</a>
+                <a onclick="router.navigate('courses')" class="hover:text-secondary cursor-pointer font-semibold">الدورات</a>
+                <a onclick="router.navigate('exams')" class="hover:text-secondary cursor-pointer font-semibold">الاختبارات</a>
+                <a onclick="router.navigate('contact')" class="hover:text-secondary cursor-pointer font-semibold">تواصل معنا</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-moon dark:hidden text-primary"></i>
+                    <i class="fas fa-sun hidden dark:block text-secondary"></i>
+                </button>
+                <div id="auth-buttons">
+                    <button onclick="router.navigate('login')" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-emerald-800 transition text-sm font-bold">تسجيل الدخول</button>
+                </div>
+                <div id="user-menu" class="hidden relative">
+                    <button onclick="toggleUserMenu()" class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg">
+                        <i class="fas fa-user-circle text-2xl text-primary"></i>
+                        <span id="nav-username" class="hidden sm:block font-semibold text-sm">ضيف</span>
+                    </button>
+                    <div id="user-dropdown" class="hidden absolute left-0 mt-2 w-48 bg-white dark:bg-darkcard shadow-xl rounded-lg py-2 border border-gray-200 dark:border-gray-700">
+                        <a onclick="router.navigate('profile')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">الملف الشخصي</a>
+                        <a onclick="router.navigate('certificates')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">شهاداتي</a>
+                        <hr class="my-2 border-gray-200 dark:border-gray-700">
+                        <a onclick="auth.logout()" class="block px-4 py-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 cursor-pointer">تسجيل الخروج</a>
+                    </div>
+                </div>
+                <button class="md:hidden text-2xl text-primary" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-darkcard border-t dark:border-gray-700 p-4">
+            <a onclick="router.navigate('home')" class="block py-2 hover:text-secondary cursor-pointer">الرئيسية</a>
+            <a onclick="router.navigate('courses')" class="block py-2 hover:text-secondary cursor-pointer">الدورات</a>
+            <a onclick="router.navigate('exams')" class="block py-2 hover:text-secondary cursor-pointer">الاختبارات</a>
+            <a onclick="router.navigate('contact')" class="block py-2 hover:text-secondary cursor-pointer">تواصل معنا</a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app" class="min-h-screen pb-20">
+        <!-- Views will be injected here -->
+    </main>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/201220247641" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition transform hover:scale-110 animate-pulse">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer id="footer" class="hidden bg-primary text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-book-open text-secondary text-2xl"></i>
+                        <h3 class="text-2xl font-bold">أكاديمية الضاد</h3>
+                    </div>
+                    <p class="text-gray-300 leading-relaxed">تعليم اللغة العربية بأسلوب حديث وميسر لجميع المراحل التعليمية، مع شهادات معتمدة ومتابعة مستمرة.</p>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-secondary">روابط سريعة</h4>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a onclick="router.navigate('courses')" class="hover:text-white cursor-pointer">الدورات التعليمية</a></li>
+                        <li><a onclick="router.navigate('exams')" class="hover:text-white cursor-pointer">الاختبارات الإلكترونية</a></li>
+                        <li><a onclick="router.navigate('contact')" class="hover:text-white cursor-pointer">تواصل معنا</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xl font-bold mb-4 text-secondary">تواصل معنا</h4>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-center gap-2"><i class="fas fa-phone text-secondary"></i> 01220247641</li>
+                        <li class="flex items-center gap-2"><i class="fab fa-whatsapp text-secondary"></i> 01220247641</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-user-tie text-secondary"></i> المدير: محمود محمد إسماعيل عبد الباسط</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-emerald-800 pt-6 text-center text-gray-400 text-sm">
+                <p>© 2026 أكاديمية الضاد. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- Mock Database ---
+        const db = {
+            users: [
+                { id: 1, name: "محمود محمد إسماعيل عبد الباسط", email: "admin@aldhad.com", phone: "01220247641", role: "admin", grade: "مدير المنصة", password: "admin123" }
+            ],
+            courses: [
+                { id: 1, title: "دورة النحو الشامل", category: "النحو", level: "الصف الثالث الثانوي", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500", desc: "شرح مبسط ومفصل لقواعد النحو العربي من المبتدئ إلى الاحتراف", lessonsCount: 24, duration: "12 ساعة", students: 150 },
+                { id: 2, title: "البلاغة والنقد الأدبي", category: "البلاغة", level: "المرحلة الجامعية", image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500", desc: "فهم أسرار الجمال في اللغة العربية وعلوم البلاغة الثلاثة", lessonsCount: 18, duration: "9 ساعات", students: 89 },
+                { id: 3, title: "أحكام التجويد والقراءات", category: "القراءات", level: "الصف الأول الثانوي", image: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae?w=500", desc: "تعلم أحكام التجويد الأساسية والقراءات العشر الصغرى", lessonsCount: 30, duration: "15 ساعة", students: 320 }
+            ],
+            lessons: [
+                { id: 1, courseId: 1, title: "المبتدأ والخبر", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "شرح تفصيلي لأحكام المبتدأ والخبر مع الأمثلة التطبيقية.", homework: "حل تمارين صفحة 12", comments: [{user: "أحمد", text: "شرح ممتاز يا أستاذ محمود"}] },
+                { id: 2, courseId: 1, title: "كان وأخواتها", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", summary: "الأفعال الناسخة وأثرها في المبتدأ والخبر.", homework: "إعراب 5 جمل", comments: [] }
+            ],
+            exams: [
+                { id: 1, courseId: 1, title: "اختبار النحو النهائي", duration: 10, questions: [
+                    { q: "ما هو إعراب كلمة 'الطالبُ' في جملة: الطالبُ مجتهدٌ؟", options: ["مبتدأ مرفوع", "خبر مرفوع", "فاعل مرفوع"], correct: 0 },
+                    { q: "من أخوات كان التي تعمل عملها؟", options: ["إنّ", "ليس", "لعلّ"], correct: 1 }
+                ]}
+            ]
+        };
+
+        // --- State ---
+        const state = {
+            currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
+            darkMode: localStorage.getItem('darkMode') === 'true'
+        };
+
+        // --- Components ---
+        const components = {
+            courseCard: (course) => `
+                <div class="bg-white dark:bg-darkcard rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-xl transition">
+                    <img src="${course.image}" class="w-full h-48 object-cover" alt="${course.title}">
+                    <div class="p-5">
+                        <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded font-bold">${course.category}</span>
+                        <h3 class="text-xl font-bold my-2 text-primary dark:text-white">${course.title}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">${course.desc}</p>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500">
+                            <span><i class="fas fa-play-circle ml-1"></i> ${course.lessonsCount} درس</span>
+                            <span><i class="fas fa-clock ml-1"></i> ${course.duration}</span>
+                        </div>
+                        <button onclick="router.navigate('course-details', {id: ${course.id}})" class="w-full mt-4 bg-primary text-white py-2 rounded-lg font-bold hover:bg-emerald-800 transition">عرض التفاصيل</button>
+                    </div>
+                </div>
+            `
+        };
+
+        // --- Router ---
+        window.router = {
+            navigate: (view, params = {}) => {
+                const app = document.getElementById('app');
+                window.scrollTo(0, 0);
+                
+                const noNavViews = ['splash', 'onboarding', 'login', 'register'];
+                if (noNavViews.includes(view)) {
+                    document.getElementById('navbar').classList.add('hidden');
+                    document.getElementById('footer').classList.add('hidden');
+                } else {
+                    document.getElementById('navbar').classList.remove('hidden');
+                    document.getElementById('footer').classList.remove('hidden');
+                }
+
+                switch(view) {
+                    case 'onboarding': app.innerHTML = views.onboarding(); break;
+                    case 'login': app.innerHTML = views.login(); break;
+                    case 'register': app.innerHTML = views.register(); break;
+                    case 'home': app.innerHTML = views.home(); break;
+                    case 'courses': app.innerHTML = views.courses(); break;
+                    case 'course-details': app.innerHTML = views.courseDetails(params.id); break;
+                    case 'lesson': app.innerHTML = views.lesson(params.id); break;
+                    case 'exams': app.innerHTML = views.exams(); break;
+                    case 'exam-taking': app.innerHTML = views.examTaking(params.id); break;
+                    case 'results': app.innerHTML = views.results(params.score, params.total); break;
+                    case 'certificates': app.innerHTML = views.certificates(); break;
+                    case 'profile': app.innerHTML = views.profile(); break;
+                    case 'contact': app.innerHTML = views.contact(); break;
+                    default: app.innerHTML = views.home();
+                }
+                
+                document.getElementById('mobile-menu').classList.add('hidden');
+                updateAuthUI();
+            }
+        };
+
+        // --- Auth System ---
+        window.auth = {
+            login: (e) => {
+                e.preventDefault();
+                const email = e.target.email.value;
+                const password = e.target.password.value;
+                const user = db.users.find(u => u.email === email && u.password === password) || { name: email.split('@')[0], email, grade: "طالب" };
+                state.currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                router.navigate('home');
+            },
+            register: (e) => {
+                e.preventDefault();
+                const user = {
+                    name: e.target.name.value,
+                    email: e.target.email.value,
+                    phone: e.target.phone.value,
+                    grade: e.target.grade.value
+                };
+                state.currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                router.navigate('home');
+            },
+            logout: () => {
+                state.currentUser = null;
+                localStorage.removeItem('currentUser');
+                router.navigate('login');
+            }
+        };
+
+        // --- Exam System ---
+        window.examSystem = {
+            submit: (e, id) => {
+                e.preventDefault();
+                const exam = db.exams.find(ex => ex.id === id);
+                let score = 0;
+                exam.questions.forEach((q, idx) => {
+                    const selected = e.target[`q${idx}`].value;
+                    if (parseInt(selected) === q.correct) score++;
+                });
+                router.navigate('results', { score, total: exam.questions.length });
+            }
+        };
+
+        // --- Views ---
+        const views = {
+            onboarding: () => `
+                <div class="min-h-screen bg-primary flex flex-col items-center justify-center p-6 text-white fade-in">
+                    <div class="max-w-md w-full text-center">
+                        <i class="fas fa-book-open text-6xl text-secondary mb-4"></i>
+                        <h1 class="text-3xl font-bold mb-2">أكاديمية الضاد</h1>
+                        <p class="text-gray-300 mb-8">منصتك الشاملة لاحتراف اللغة العربية</p>
+                        <button onclick="router.navigate('register')" class="w-full bg-secondary text-white py-4 rounded-xl font-bold text-lg hover:bg-amber-600 transition shadow-lg">ابدأ الآن مجاناً</button>
+                        <button onclick="router.navigate('login')" class="mt-4 text-gray-300 hover:text-white underline block mx-auto">لديك حساب بالفعل؟ سجل دخول</button>
+                    </div>
+                </div>
+            `,
+            login: () => `
+                <div class="min-h-screen flex items-center justify-center p-4 fade-in">
+                    <div class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
+                        <h2 class="text-2xl font-bold text-primary dark:text-white text-center mb-6">تسجيل الدخول</h2>
+                        <form onsubmit="auth.login(event)" class="space-y-4">
+                            <input type="email" name="email" placeholder="البريد الإلكتروني" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                            <input type="password" name="password" placeholder="كلمة المرور" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                            <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition">دخول</button>
+                        </form>
+                        <p class="text-center mt-6 text-sm">ليس لديك حساب؟ <a onclick="router.navigate('register')" class="text-secondary font-bold cursor-pointer hover:underline">سجل الآن</a></p>
+                    </div>
+                </div>
+            `,
+            register: () => `
+                <div class="min-h-screen flex items-center justify-center p-4 fade-in">
+                    <div class="bg-white dark:bg-darkcard p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100 dark:border-gray-700">
+                        <h2 class="text-2xl font-bold text-primary dark:text-white text-center mb-6">إنشاء حساب جديد</h2>
+                        <form onsubmit="auth.register(event)" class="space-y-4">
+                            <input type="text" name="name" placeholder="الاسم الكامل" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                            <input type="email" name="email" placeholder="البريد الإلكتروني" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                            <input type="tel" name="phone" placeholder="رقم الهاتف" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                            <select name="grade" required class="w-full px-4 py-3 rounded-lg border dark:bg-gray-800 dark:border-gray-600 outline-none">
+                                <option value="">اختر الصف الدراسي</option>
+                                <option>الصف الثالث الثانوي</option>
+                                <option>المرحلة الجامعية</option>
+                            </select>
+                            <button type="submit" class="w-full bg-secondary text-white py-3 rounded-lg font-bold hover:bg-amber-600 transition">إنشاء الحساب</button>
+                        </form>
+                        <p class="text-center mt-4 text-sm">لديك حساب؟ <a onclick="router.navigate('login')" class="text-primary font-bold cursor-pointer">تسجيل الدخول</a></p>
+                    </div>
+                </div>
+            `,
+            home: () => `
+                <div class="fade-in">
+                    <div class="bg-primary text-white py-16 px-4 text-center">
+                        <h1 class="text-4xl font-bold mb-4">أتقن اللغة العربية مع أكاديمية الضاد</h1>
+                        <p class="text-gray-300 mb-6">دورات شاملة واختبارات تفاعلية</p>
+                        <button onclick="router.navigate('courses')" class="bg-secondary text-white px-8 py-3 rounded-lg font-bold hover:bg-amber-600 transition">تصفح الدورات</button>
+                    </div>
+                    <div class="container mx-auto px-4 py-12">
+                        <h2 class="text-2xl font-bold mb-6 text-primary dark:text-white">الدورات المتاحة</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            ${db.courses.map(course => components.courseCard(course)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `,
+            courses: () => `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-8 text-center">جميع الدورات</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${db.courses.map(course => components.courseCard(course)).join('')}
+                    </div>
+                </div>
+            `,
+            courseDetails: (id) => {
+                const course = db.courses.find(c => c.id === id) || db.courses[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h1 class="text-3xl font-bold text-primary dark:text-white mb-4">${course.title}</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">${course.desc}</p>
+                    <button onclick="router.navigate('lesson', {id: 1})" class="bg-secondary text-white px-6 py-3 rounded-lg font-bold">ابدأ التعلم الآن</button>
+                </div>
+                `;
+            },
+            lesson: (id) => {
+                const lesson = db.lessons.find(l => l.id === id) || db.lessons[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in">
+                    <h1 class="text-2xl font-bold mb-4 text-primary dark:text-white">${lesson.title}</h1>
+                    <div class="aspect-video max-w-3xl mx-auto bg-black rounded-xl overflow-hidden mb-6">
+                        <iframe class="w-full h-full" src="${lesson.videoUrl}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">${lesson.summary}</p>
+                </div>
+                `;
+            },
+            exams: () => `
+                <div class="container mx-auto px-4 py-8 fade-in text-center">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-8">الاختبارات</h2>
+                    ${db.exams.map(e => `
+                        <div class="bg-white dark:bg-darkcard p-6 rounded-xl shadow max-w-md mx-auto">
+                            <h3 class="text-xl font-bold mb-4">${e.title}</h3>
+                            <button onclick="router.navigate('exam-taking', {id: ${e.id}})" class="bg-primary text-white px-6 py-2 rounded-lg font-bold">بدء الاختبار</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `,
+            examTaking: (id) => {
+                const exam = db.exams.find(e => e.id === id) || db.exams[0];
+                return `
+                <div class="container mx-auto px-4 py-8 fade-in max-w-xl">
+                    <h2 class="text-2xl font-bold mb-6">${exam.title}</h2>
+                    <form onsubmit="examSystem.submit(event, ${exam.id})" class="space-y-6">
+                        ${exam.questions.map((q, idx) => `
+                            <div class="bg-white dark:bg-darkcard p-4 rounded-lg shadow">
+                                <p class="font-bold mb-3">${idx+1}. ${q.q}</p>${q.options.map((opt, optIdx) => `
+                                    <label class="block mb-2">
+                                        <input type="radio" name="q${idx}" value="${optIdx}" required> ${opt}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        `).join('')}
+                        <button type="submit" class="w-full bg-secondary text-white py-3 rounded-lg font-bold">تسليم الاختبار</button>
+                    </form>
+                </div>
+                `;
+            },
+            results: (score, total) => `
+                <div class="container mx-auto px-4 py-12 text-center fade-in">
+                    <h2 class="text-3xl font-bold mb-4">النتيجة</h2>
+                    <p class="text-4xl font-bold text-primary mb-6">${score} / ${total}</p>
+                    <button onclick="router.navigate('home')" class="bg-primary text-white px-6 py-2 rounded-lg font-bold">الرئيسية</button>
+                </div>
+            `,
+            certificates: () => `
+                <div class="container mx-auto px-4 py-8 text-center fade-in">
+                    <h2 class="text-3xl font-bold text-primary dark:text-white mb-6">الشهادات</h2>
+                    <div class="bg-white p-8 rounded-lg shadow border-4 border-amber-500 max-w-lg mx-auto">
+                        <h3 class="text-2xl font-bold text-primary">شهادة إتمام</h3>
+                        <p class="mt-4">ممنوحة للطالب: <b>${state.currentUser ? state.currentUser.name : 'ضيف'}</b></p>
+                    </div>
+                </div>
+            `,
+            profile: () => `
+                <div class="container mx-auto px-4 py-8 text-center fade-in">
+                    <h2 class="text-2xl font-bold mb-4">الملف الشخصي</h2>
+                    <p class="text-lg">الاسم: ${state.currentUser ? state.currentUser.name : 'ضيف'}</p>
+                    <p class="text-gray-500">الفرقة/الصف: ${state.currentUser ? state.currentUser.grade : 'غير محدد'}</p>
+                </div>
+            `,
+            contact: () => `
+                <div class="container mx-auto px-4 py-8 text-center fade-in">
+                    <h2 class="text-2xl font-bold mb-4">تواصل معنا</h2>
+                    <p class="text-lg">الهاتف: 01220247641</p>
+                </div>
+            `
+        };
+
+        // --- Helpers ---
+        function updateAuthUI() {
+            const authBtns = document.getElementById('auth-buttons');
+            const userMenu = document.getElementById('user-menu');
+            const navUsername = document.getElementById('nav-username');
+
+            if (state.currentUser) {
+                authBtns.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                navUsername.innerText = state.currentUser.name;
+            } else {
+                authBtns.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+            }
+        }
+
+        window.toggleDarkMode = () => {
+            state.darkMode = !state.darkMode;
+            localStorage.setItem('darkMode', state.darkMode);
+            document.documentElement.classList.toggle('dark');
+        };
+
+        window.toggleUserMenu = () => {
+            document.getElementById('user-dropdown').classList.toggle('hidden');
+        };
+
+        window.toggleMobileMenu = () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        };
+
+        // --- Init ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if (state.darkMode) document.documentElement.classList.add('dark');
+            
+            setTimeout(() => { document.getElementById('splash-bar').style.width = '100%'; }, 100);
+            setTimeout(() => {
+                document.getElementById('splash').classList.add('hide-splash');
+                router.navigate(state.currentUser ? 'home' : 'onboarding');
+            }, 1200);
+        });
+    </script>
+</body>
+</html>
